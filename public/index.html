@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Traffic Volume Prediction</title>
+  <style>
+    /* Global Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #121212;
+      color: #f5f5f5;
+      line-height: 1.6;
+    }
+
+    /* Header */
+    header {
+      background-color: #000;
+      color: white;
+      padding: 20px 40px;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+      transition: background-color 0.4s ease;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2em;
+      font-weight: bold;
+      color: #ffffff;
+      transition: color 0.3s ease;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+      font-size: 1em;
+      transition: color 0.3s ease, transform 0.2s ease;
+    }
+
+    nav a:hover {
+      color: #00e6e6;
+      transform: scale(1.1);
+    }
+
+    main {
+      padding-top: 110px;
+    }
+
+    .container {
+      background-color: #1e1e1e;
+      max-width: 700px;
+      margin: 40px auto;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+      transition: all 0.4s ease;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .input-group {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    label {
+      width: 45%;
+      font-weight: bold;
+      color: #ddd;
+    }
+
+    input {
+      width: 50%;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      background-color: #333;
+      color: #f5f5f5;
+      transition: background-color 0.3s;
+    }
+
+    input:focus {
+      outline: none;
+      background-color: #444;
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      font-size: 1.1em;
+      background: linear-gradient(to right, #000000, #333333);
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.4s, transform 0.2s;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #00e6e6, #000000);
+      transform: scale(1.03);
+    }
+
+    #output {
+      margin-top: 20px;
+      font-size: 1.3em;
+      color: #00e6e6;
+      text-align: center;
+    }
+
+    section {
+      background-color: #1e1e1e;
+      padding: 30px;
+      margin: 40px auto;
+      max-width: 800px;
+      border-radius: 10px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .team-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 30px;
+    }
+
+    .member {
+      text-align: center;
+      color: #eee;
+    }
+
+    .member img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #00e6e6;
+      margin-bottom: 10px;
+      transition: transform 0.3s;
+    }
+
+    .member img:hover {
+      transform: scale(1.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 700px) {
+      .input-group {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      label, input {
+        width: 100%;
+      }
+
+      nav {
+        flex-direction: column;
+        align-items: flex-end;
+      }
+
+      nav a {
+        margin: 5px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed Header -->
+  <header>
+    <h1>Traffic Predictor</h1>
+    <nav>
+      <a href="#predictor">Predict</a>
+      <a href="#about">About Project</a>
+      <a href="#team">Team</a>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Predictor Section -->
+    <div id="predictor" class="container">
+      <h2>Traffic Volume Prediction</h2>
+
+      <div class="input-group">
+        <label for="is_holiday">Is Holiday (0/1):</label>
+        <input type="number" id="is_holiday" min="0" max="1">
+      </div>
+
+      <div class="input-group">
+        <label for="humidity">Humidity (%):</label>
+        <input type="number" id="humidity" min="0" max="100">
+      </div>
+
+      <div class="input-group">
+        <label for="wind_speed">Wind Speed (m/s):</label>
+        <input type="number" id="wind_speed" min="0">
+      </div>
+
+      <div class="input-group">
+        <label for="temperature">Temperature (Kelvin):</label>
+        <input type="number" id="temperature" min="200">
+      </div>
+
+      <div class="input-group">
+        <label for="weekday">Weekday (1=Mon ... 7=Sun):</label>
+        <input type="number" id="weekday" min="1" max="7">
+      </div>
+
+      <div class="input-group">
+        <label for="hour">Hour (0–23):</label>
+        <input type="number" id="hour" min="0" max="23">
+      </div>
+
+      <div class="input-group">
+        <label for="month_day">Day of Month (1–31):</label>
+        <input type="number" id="month_day" min="1" max="31">
+      </div>
+
+      <div class="input-group">
+        <label for="year">Year:</label>
+        <input type="number" id="year" min="2000" max="2030">
+      </div>
+
+      <div class="input-group">
+        <label for="month">Month (1–12):</label>
+        <input type="number" id="month" min="1" max="12">
+      </div>
+
+      <button onclick="predict()">Predict</button>
+      <p id="output"></p>
+    </div>
+
+    <!-- About Section -->
+    <section id="about">
+      <section style="font-family: Arial, sans-serif; padding: 2rem; background: #f9f9f9; border-radius: 12px;">
+        <h2 style="color: #2c3e50;">🚦 About the Traffic Flow Predictor</h2>
+        <p style="font-size: 16px; color: #333;">
+          The <strong>Traffic Flow Predictor</strong> is a machine learning-powered web application designed to forecast traffic volume based on environmental and temporal inputs such as temperature, rainfall, weather conditions, date, and time. Built with Python and scikit-learn for model training and prediction, and Node.js for backend integration, the project demonstrates how AI can be used to make informed decisions in urban planning and travel optimization.
+        </p>
+      
+        <h3 style="color: #34495e;">🔍 Key Features</h3>
+        <ul style="font-size: 16px; color: #333; list-style: disc; padding-left: 1.5rem;">
+          <li>Interactive web interface for real-time predictions</li>
+          <li>ML model built using MLPRegressor from scikit-learn</li>
+          <li>Input fields for weather, date, and time conditions</li>
+          <li>Efficient model scaling using MinMaxScaler</li>
+          <li>Deployed with Node.js server integration</li>
+        </ul>
+      
+        <h3 style="color: #34495e;">🛠️ Technologies Used</h3>
+        <ul style="font-size: 16px; color: #333; list-style: disc; padding-left: 1.5rem;">
+          <li>Python 3.11 & joblib</li>
+          <li>Scikit-learn for machine learning</li>
+          <li>Node.js for running the backend server</li>
+          <li>HTML + CSS for the frontend UI</li>
+        </ul>
+      
+        <h3 style="color: #34495e;">📈 Applications</h3>
+        <ul style="font-size: 16px; color: #333; list-style: disc; padding-left: 1.5rem;">
+          <li>Urban traffic monitoring and planning</li>
+          <li>Integration with smart city platforms</li>
+          <li>Improving delivery logistics</li>
+          <li>Enhancing route planning in navigation apps</li>
+        </ul>
+      
+        <p style="margin-top: 1.5rem; font-size: 16px; color: #2c3e50;">
+          🔗 GitHub Repository: 
+          <a href="https://github.com/Harsh-Pratap/traffic-predictor" target="_blank" style="color: #2980b9;">
+            traffic-predictor
+          </a>
+        </p>
+      </section>
+      
+    </section>
+
+    <!-- Team Section -->
+    <section id="team">
+      <h2>Team Members</h2>
+      <div class="team-grid">
+        <div class="member">
+          <img src="https://via.placeholder.com/100" alt="Member 1">
+          <h4>Harsh Pratap</h4>
+          <p>AI/ML Developer</p>
+        </div>
+        <div class="member">
+          <img src="https://via.placeholder.com/100" alt="Member 2">
+          <h4>Aditya Kumar Tiwari</h4>
+          <p>Backend Developer</p>
+        </div>
+        <div class="member">
+          <img src="https://via.placeholder.com/100" alt="Member 3">
+          <h4>Aman Raj</h4>
+          <p>Frontend Engineer</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function predict() {
+      const inputs = [
+        'is_holiday', 'humidity', 'wind_speed', 'temperature',
+        'weekday', 'hour', 'month_day', 'year', 'month'
+      ];
+
+      const inputArray = inputs.map(id => parseFloat(document.getElementById(id).value));
+
+      if (inputArray.some(isNaN)) {
+        alert("Please enter valid numeric values for all fields.");
+        return;
+      }
+
+      fetch("/predict", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: inputArray })
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById('output').innerText = "Prediction: " + data.prediction;
+      })
+      .catch(error => {
+        document.getElementById('output').innerText = "Error during prediction.";
+        console.error("Prediction error:", error);
+      });
+    }
+  </script>
+</body>
+</html>
